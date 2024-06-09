@@ -2,6 +2,7 @@
 import os
 import sys
 import configparser
+from time import sleep
 # Check for local machine prerequisites
 def checkLocalPrereqs():
     print("Checking dependencies...")
@@ -42,4 +43,28 @@ def genPubKey():
             o.write("\"\n}")
 def setUpTerraform():
     print("Initializing Terraform...")
-    os.system("terraform init > /dev/null")
+    if os.system("terraform init > /dev/null") != 0:
+        print("Terraform initialization failed.")
+        exit(1)
+    print("Creating AWS resources...")
+    if os.system("echo \"yes\" | terraform apply") != 0:
+        print("One or more AWS resources was not created successfully.")
+    print("All AWS resources were created succesfully.")
+    os.system("terraform output > .output")
+    with open(".output") as f:
+        svrIP = f.read().split('"')[1]
+        print("Server IP is %s" % svrIP)
+    os.unlink(".output")
+    return svrIP
+def configureServer(ip: str):
+    # wait until 
+    while os.system("ssh -i ~/.ssh/minecraftserver -o StrictHostKeyChecking=accept-new ec2-user@%s cat /dev/null" % ip):
+        sleep(1)
+    os.system("scp -i ~/.ssh/minecraftserver ./ec2setup.sh ./ec2setup-mcsvc.sh ec2-user@%s:~/" % ip)
+    os.system("ssh -i ~/.ssh/minecraftserver ec2-user@%s sudo ./ec2setup.sh" % ip)
+if __name__ == "__main__":
+    checkLocalPrereqs()
+    setEnvVars()
+    genPubKey()
+    ip = setUpTerraform()
+    configureServer(ip)
