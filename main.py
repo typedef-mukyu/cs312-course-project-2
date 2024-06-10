@@ -24,7 +24,6 @@ def checkLocalPrereqs():
 def setEnvVars():
     awsCred = configparser.ConfigParser()
     awsCred.read(os.path.expanduser("~/.aws/credentials"))
-    print(awsCred.sections())
     for k in awsCred["default"]:
         os.environ[k.upper()] = awsCred["default"][k]
 def genPubKey():
@@ -49,6 +48,7 @@ def setUpTerraform():
     print("Creating AWS resources...")
     if os.system("echo \"yes\" | terraform apply") != 0:
         print("One or more AWS resources was not created successfully.")
+        exit(1)
     print("All AWS resources were created succesfully.")
     os.system("terraform output > .output")
     with open(".output") as f:
@@ -57,10 +57,12 @@ def setUpTerraform():
     os.unlink(".output")
     return svrIP
 def configureServer(ip: str):
-    # wait until 
-    while os.system("ssh -i ~/.ssh/minecraftserver -o StrictHostKeyChecking=accept-new ec2-user@%s cat /dev/null" % ip):
+    print("Waiting for EC2 instance to become ready...")
+    while os.system("ssh -i ~/.ssh/minecraftserver -o StrictHostKeyChecking=accept-new ec2-user@%s cat /dev/null > /dev/null" % ip):
         sleep(1)
-    os.system("scp -i ~/.ssh/minecraftserver ./ec2setup.sh ./ec2setup-mcsvc.sh ec2-user@%s:~/" % ip)
+    print("Copying configuration scripts...")
+    os.system("scp -i ~/.ssh/minecraftserver ./ec2setup.sh ./ec2setup-mcsvc.sh ./minecraft.service ec2-user@%s:~/" % ip)
+    print("Running configuration scripts...")
     os.system("ssh -i ~/.ssh/minecraftserver ec2-user@%s sudo ./ec2setup.sh" % ip)
 if __name__ == "__main__":
     checkLocalPrereqs()
@@ -68,3 +70,4 @@ if __name__ == "__main__":
     genPubKey()
     ip = setUpTerraform()
     configureServer(ip)
+    print("\nConfiguration complete. Server IP: %s" % ip)
