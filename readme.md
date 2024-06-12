@@ -21,7 +21,12 @@ other two aforementioned files), which will create a service account with restri
 permissions, install the Minecraft server to the `/minecraft` directory, configure it to
 run as a service under the restricted account, and restart the machine. After the server
 is restarted, the script finishes by writing its public IP address to standard output.
+A FIFO is also created in `/minecraft/serverinput` which links to the standard input
+of the Minecraft server application for management. Users in the `minecraft` group can
+execute server console commands by writing to that FIFO.
 
+Note that it may take up to 3 minutes from when the script finishes for the server
+to be available.
 
 ## Prerequisites
 
@@ -58,10 +63,11 @@ To create the server, simply run:
 ./main.py
 ```
 
-This install script is fully automated. Once the script completes,
-the server's public IP address will be written to standard output, while
-the server's SSH keys will be written to `~/.ssh/minecraftserver`
-(for the private key) and to `~/.ssh/minecraftserver.pub` (for the public key).
+This install script deploys the above resources and configures the server completely
+automatically. Once the script completes, the server's public IP address will be 
+written to standard output, while the server's SSH keys will be written to 
+`~/.ssh/minecraftserver` (for the private key) and to `~/.ssh/minecraftserver.pub`
+(for the public key).
 
 After the script completes, the EC2 instance may take a few minutes before it is
 ready to accept Minecraft players.
@@ -92,3 +98,16 @@ execute server console commands. For example, the following can be used to kick 
 echo "/kick mcplayer" > /minecraft/serverinput
 ```
 
+## Resources used
+
+- AWS Learner Lab (for first manually creating the infrastrucure, then analyzing the created infrastructre to figure out what resources need to be created in this script)
+
+- https://registry.terraform.io/providers/hashicorp/aws/latest/docs (for finding the corresponding Terraform code for each AWS resource)
+
+- https://docs.python.org/3/library/configparser.html (for using the configparser Python library to parse the `~/.aws/credentials` file)
+
+- https://www.freedesktop.org/software/systemd/man/255/systemd.service.html (for configuring ExecStop for the Minecraft systemd service)
+
+- https://linux.die.net/man/1/bash (for writing Bash scripts and to implement read/write I/O redirection with the FIFO (since those block until both sides are opened))
+
+- My original Course Project part 1 documentation (for commands needed to configure the EC2 instance, so those can be put into a script)
