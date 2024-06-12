@@ -1,5 +1,5 @@
 .terraform/
-.terraform.lock.hcl
+.terraform.*
 sshkey.tf
 terraform.tfstate
 terraform.tfstate.backup

@@ -58,7 +58,7 @@ def setUpTerraform():
     return svrIP
 def configureServer(ip: str):
     print("Waiting for EC2 instance to become ready...")
-    while os.system("ssh -i ~/.ssh/minecraftserver -o StrictHostKeyChecking=accept-new ec2-user@%s cat /dev/null > /dev/null" % ip):
+    while os.system("ssh -i ~/.ssh/minecraftserver -q -o StrictHostKeyChecking=accept-new ec2-user@%s cat /dev/null > /dev/null" % ip):
         sleep(1)
     print("Copying configuration scripts...")
     os.system("scp -i ~/.ssh/minecraftserver ./ec2setup.sh ./ec2setup-mcsvc.sh ./minecraft.service ec2-user@%s:~/" % ip)
