@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import os
-import sys
 import configparser
 from time import sleep
 # Check for local machine prerequisites
