@@ -2,10 +2,10 @@
 
 ## Introduction
 
-This script deploys and installs a dedicated Minecraft server on AWS, running the
-application on an EC2 instance and creating the VPC infrastructure necessary
-for outside players to connect to this server. An SSH key is also created for
-remote management of this server.
+This script deploys and installs a dedicated Minecraft (version 1.20.6) server on AWS,
+running the application on an EC2 instance and creating the VPC infrastructure
+necessary for outside players to connect to this server. An SSH key is also created
+for remote management of this server.
 
 This script works by first checking for the required AWS and Terraform CLIs, and
 also checking for the AWS credential file mentioned below. The script will then read
@@ -68,6 +68,9 @@ automatically. Once the script completes, the server's public IP address will be
 written to standard output, while the server's SSH keys will be written to 
 `~/.ssh/minecraftserver` (for the private key) and to `~/.ssh/minecraftserver.pub`
 (for the public key).
+
+**NOTE:** Ignore the errors displayed near the end of the script regarding `eula.txt`.
+They are corrected immediately after they appear.
 
 After the script completes, the EC2 instance may take a few minutes before it is
 ready to accept Minecraft players.
