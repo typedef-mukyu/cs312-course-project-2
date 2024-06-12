@@ -73,7 +73,10 @@ written to standard output, while the server's SSH keys will be written to
 They are corrected immediately after they appear.
 
 After the script completes, the EC2 instance may take a few minutes before it is
-ready to accept Minecraft players.
+ready to accept Minecraft players. Once the server is ready, players may join
+by entering the server IP address (displayed at the end of the script) into
+Minecraft's multiplayer menu by selecting either *Add Server* (to save this IP address)
+or *Direct Connection* (to connect without saving).
 
 ## Management
 
